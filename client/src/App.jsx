@@ -5,6 +5,20 @@ import QuestionGenerator from "./component/QuestionGenerator";
 //import AudioRecorder from "./component/Audio";
 
 const App = () => {
+  document.addEventListener('copy', function (e) {
+    e.preventDefault();
+    alert('Copying is disabled!');
+  });
+
+  document.addEventListener('cut', function (e) {
+    e.preventDefault();
+    alert('Cutting is disabled!');
+  });
+
+  document.addEventListener('paste', function (e) {
+    e.preventDefault();
+    alert('Pasting is disabled!');
+  });
   return (
     <div className="min-h-screen bg-gray-100 font-sans">
       {/* Navigation Bar */}
