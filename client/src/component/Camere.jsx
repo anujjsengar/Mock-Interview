@@ -13,11 +13,7 @@ const Camera = () => {
     const [gender, setGender] = useState("");
 
 
-    document.addEventListener("visibilitychange", function () {
-        if (document.hidden) {
-            alert("Tab switching detected! This may be considered cheating.");
-        }
-    });
+    
 
     const startRecording = () => {
         if (webcamRef.current && webcamRef.current.stream) {
