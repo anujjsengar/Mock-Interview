@@ -24,6 +24,13 @@ const App = () => {
             alert("Tab switching detected! This may be considered cheating.");
         }
     });
+  document.addEventListener('keydown', function (e) {
+    // Check if Ctrl key is pressed and Tab key is pressed
+    if (e.ctrlKey && e.key === 'Tab') {
+      e.preventDefault(); // Disable Ctrl+Tab
+      alert('Ctrl+Tab is disabled!');
+    }
+  });
   return (
     <div className="min-h-screen bg-gray-100 font-sans">
       {/* Navigation Bar */}
