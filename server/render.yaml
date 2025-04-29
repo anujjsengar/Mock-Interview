@@ -3,4 +3,5 @@ services:
     name: flask-app
     env: python
     buildCommand: ""
-    startCommand: gunicorn app:app
+    startCommand: gunicorn -w 2 -t 60 app:app
+
