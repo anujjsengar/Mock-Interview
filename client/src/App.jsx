@@ -19,6 +19,11 @@ const App = () => {
     e.preventDefault();
     alert('Pasting is disabled!');
   });
+  document.addEventListener("visibilitychange", function () {
+        if (document.hidden) {
+            alert("Tab switching detected! This may be considered cheating.");
+        }
+    });
   return (
     <div className="min-h-screen bg-gray-100 font-sans">
       {/* Navigation Bar */}
