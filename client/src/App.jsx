@@ -38,7 +38,7 @@ const App = () => {
       <main className="flex flex-col md:flex-row justify-center items-center gap-8 p-6">
         <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
           <h4 className="text-xl font-semibold text-gray-800 mb-4 text-center">AI-BASED MOCK INTERVIEW</h4>
-          <Camera />
+{/*           <Camera /> */}
         </div>
         <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
           <h4 className="text-xl font-semibold text-gray-800 mb-4 text-center">AI-BASED MOCK INTERVIEW</h4>
