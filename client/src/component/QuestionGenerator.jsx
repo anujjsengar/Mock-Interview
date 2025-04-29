@@ -11,7 +11,7 @@ const QuestionGenerator = () => {
 
     const fetchQuestion = async () => {
         setLoading(true);
-        const response = await fetch('https://mock-interview-49z9.onrender.com/generate-question', {
+        const response = await fetch('https://mock-interview-zpe7.onrender.com/generate-question', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ subject }),
@@ -23,7 +23,7 @@ const QuestionGenerator = () => {
     };
 
     const evaluateAnswer = async (answer) => {
-        const response = await fetch('https://mock-interview-49z9.onrender.com/evaluate-answer', {
+        const response = await fetch('https://mock-interview-zpe7.onrender.com/evaluate-answer', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ question: currentQuestion, answer }),
