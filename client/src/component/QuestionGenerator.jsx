@@ -9,52 +9,30 @@ const QuestionGenerator = () => {
     const [loading, setLoading] = useState(false);
     const recognitionRef = useRef(null);
 
-    const apiKey = 'AIzaSyBBeTYogNSjMg-J51IglUaXijpbeDACfEw';
-
     const fetchQuestion = async () => {
         setLoading(true);
-        const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{ text: `Generate one question for the subject: ${subject}` }]
-                    }]
-                })
-            }
-        );
+        const response = await fetch('https://mock-interview-49z9.onrender.com/generate-question', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ subject }),
+        });
 
         const data = await response.json();
-        const question = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No question generated.';
-        setCurrentQuestion(question);
+        setCurrentQuestion(data.question);
         setLoading(false);
     };
 
     const evaluateAnswer = async (answer) => {
-        const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{
-                            text: `Evaluate this answer: "${answer}" for the question: "${currentQuestion}". Respond only with "correct" or "incorrect".`
-                        }]
-                    }]
-                })
-            }
-        );
+        const response = await fetch('https://mock-interview-49z9.onrender.com/evaluate-answer', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ question: currentQuestion, answer }),
+        });
 
         const data = await response.json();
-        const evaluation = data.candidates?.[0]?.content?.parts?.[0]?.text.toLowerCase();
-
-        if (evaluation.includes('correct')) {
-            setScore(prev => prev + 1);
-        }
-        fetchQuestion(); 
+        const evaluation = data.evaluation;
+        setScore(evaluation);
+        fetchQuestion();
     };
 
     const startRecording = () => {
@@ -66,17 +44,35 @@ const QuestionGenerator = () => {
 
         const recognition = new SpeechRecognition();
         recognition.lang = 'en-US';
-        recognition.interimResults = false;
+        recognition.interimResults = true;
         recognition.maxAlternatives = 1;
 
+        let timeout;
+
         recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript;
+            const transcript = Array.from(event.results)
+                .map(result => result[0].transcript)
+                .join('');
+
             setUserAnswer(transcript);
-            evaluateAnswer(transcript);
+
+            if (event.results[0].isFinal) {
+                clearTimeout(timeout);
+                evaluateAnswer(transcript);
+            } else {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    recognition.stop();
+                }, 15000);
+            }
         };
 
         recognition.onerror = (event) => {
             alert('Speech recognition error: ' + event.error);
+        };
+
+        recognition.onend = () => {
+            clearTimeout(timeout);
         };
 
         recognitionRef.current = recognition;
@@ -92,36 +88,65 @@ const QuestionGenerator = () => {
     };
 
     return (
-        <div style={{ padding: '20px', fontFamily: 'Arial' }}>
-            <h1>AI Question Generator</h1>
+        <div className="p-6 bg-gray-100 min-h-screen flex flex-col items-center font-sans">
+            <h1 className="text-3xl font-bold mb-6 text-gray-800">AI Question Generator</h1>
 
-            <div>
-                <label>Subject:</label>
+            <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
+                <label className="block text-gray-700 font-semibold mb-2">Subject:</label>
                 <input
                     type="text"
                     value={subject}
                     onChange={(e) => setSubject(e.target.value)}
                     placeholder="Enter subject"
                     disabled={loading}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                <button onClick={handleStart} disabled={loading}>
+                <button
+                    onClick={handleStart}
+                    disabled={loading}
+                    className={`w-full mt-4 px-4 py-2 text-white font-semibold rounded-lg shadow-md transition duration-300 ${
+                        loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
+                    }`}
+                >
                     {loading ? 'Generating...' : 'Start'}
                 </button>
             </div>
 
             {currentQuestion && (
-                <div>
-                    <h2>Question:</h2>
-                    <p>{currentQuestion}</p>
-                    <button onClick={startRecording}>Answer (Record)</button>
+                <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md mt-6">
+                    <h2 className="text-xl font-semibold mb-4 text-gray-800">Question:</h2>
+                    <p className="text-gray-700 mb-4">{currentQuestion}</p>
+                    <button
+                        onClick={startRecording}
+                        className="w-full px-4 py-2 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-600 transition duration-300"
+                    >
+                        Answer (Record)
+                    </button>
+                    <textarea
+                        name="answer"
+                        id="ans"
+                        placeholder="Write your answer here"
+                        value={userAnswer}
+                        onChange={(e) => setUserAnswer(e.target.value)}
+                        className="w-full mt-4 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                        rows="4"
+                    ></textarea>
+                    <button
+                        onClick={() => evaluateAnswer(userAnswer)}
+                        className="w-full mt-4 px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 transition duration-300"
+                    >
+                        Submit Answer
+                    </button>
                     {userAnswer && (
-                        <p><strong>Your Answer:</strong> {userAnswer}</p>
+                        <p className="mt-4 text-gray-700">
+                            <strong>Your Answer:</strong> {userAnswer}
+                        </p>
                     )}
                 </div>
             )}
 
-            <div>
-                <h3>Score: {score}</h3>
+            <div className="bg-white p-4 rounded-lg shadow-md w-full max-w-md mt-6">
+                <h3 className="text-lg font-semibold text-gray-800">Score: {score}</h3>
             </div>
         </div>
     );
