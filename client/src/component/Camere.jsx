@@ -50,7 +50,7 @@ const Camera = () => {
         formData.append("image", blob, "frame.jpg");
 
         try {
-            const response = await axios.post("https://mock-interview-49z9.onrender.com/detect_faces", formData);
+            const response = await axios.post("https://mock-interview-zpe7.onrender.com/detect_faces", formData);
             if (response.data.count > 1) {
                 setShowWarning(true);
                 setTimeout(() => setShowWarning(false), 3000);
@@ -68,7 +68,7 @@ const Camera = () => {
         formData.append("image", blob, "frame.jpg");
 
         try {
-            const response = await axios.post("https://mock-interview-49z9.onrender.com/detect_phone", formData);
+            const response = await axios.post("https://mock-interview-zpe7.onrender.com/detect_phone", formData);
             if (response.data.phone_detected) {
                 alert("Phone detected! Please put it away.");
                 setShowWarning(true);
@@ -93,7 +93,7 @@ const Camera = () => {
         formData.append("screenshot", blob, "frame.jpg");
 
         try {
-            await axios.post("https://mock-interview-49z9.onrender.com/modify_details", formData);
+            await axios.post("https://mock-interview-zpe7.onrender.com/modify_details", formData);
             startRecording();
         } catch (error) {
             console.error("Error saving user details:", error);
