@@ -11,7 +11,7 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-client = MongoClient("mongodb://localhost:27017/")
+client = MongoClient("mongodb+srv://anujjsengar:Anuj%40082004@anujjsengar.2ordy.mongodb.net/?retryWrites=true&w=majority&appName=anujjsengar")
 db = client["interview_db"]
 users_collection = db["user_details"]
 os.makedirs("screenshots", exist_ok=True)
