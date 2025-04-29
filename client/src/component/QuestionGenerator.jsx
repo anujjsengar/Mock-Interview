@@ -54,7 +54,7 @@ const QuestionGenerator = () => {
         if (evaluation.includes('correct')) {
             setScore(prev => prev + 1);
         }
-        fetchQuestion(); // fetch next question
+        fetchQuestion(); 
     };
 
     const startRecording = () => {
